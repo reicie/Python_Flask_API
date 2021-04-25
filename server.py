@@ -4,6 +4,7 @@ from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+import linked_list
 
 # app
 app = Flask(__name__)
@@ -51,7 +52,17 @@ class BlogPost(db.Model):
 # create a new user
 @app.route("/user", methods=["POST"])
 def create_user():
-	pass
+	data = request.get_json()
+	new_user = User(
+		name = data["name"],
+		email = data["email"],
+		address = data["address"],
+		phone = data["phone"]
+	)
+
+	db.session.add(new_user)
+	db.session.commit()
+	return jsonify({"message": "User created successfully"}), 200
 	
 
 # return all users in descending order

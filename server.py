@@ -4,7 +4,7 @@ from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-import linked_list
+import linked_list 
 
 # app
 app = Flask(__name__)
@@ -66,24 +66,81 @@ def create_user():
 	
 
 # return all users in descending order
-@app.route("/user/descending_id", methods=["GET"])
-def get_all_users_descending():
-	pass
-
-# return all users in ascending order 
 @app.route("/user/ascending_id", methods=["GET"])
 def get_all_users_ascending():
-	pass
+	# query database and retrieve all user 
+	users = User.query.all()
+	all_users_linked_list = linked_list.LinkedList()
+
+	# transverse through query results and append users to linked_list by inserting at the end 
+	for user in users: 
+		all_users_linked_list.insert_end(
+			{
+				"id": user.id, 
+				"name": user.name, 
+				"email": user.email,
+				"address": user.address, 
+				"phone": user.phone
+			}
+		)
+
+	return jsonify(all_users_linked_list.to_list()), 200
+
+# return all users in ascending order 
+@app.route("/user/descending_id", methods=["GET"])
+def get_all_users_descending():
+	# query database for all users
+	users = User.query.all()
+	#  create an instance of linked list class
+	all_users_linked_list = linked_list.LinkedList()
+	# iterate through each users and add them to the 
+	#  linked list by inserting a dictionary with user data
+	# inserting at beginning is necessary to create a list of descending ids
+	for user in users:
+		all_users_linked_list.insert_beginning(
+			{
+				"id": user.id, 
+				"name": user.name, 
+				"email": user.email, 
+				"address": user.address, 
+				"phone": user.phone
+			}
+		)
+
+	return jsonify(all_users_linked_list.to_list()), 200
 
 # return specific user with gven id
 @app.route("/user/<user_id>", methods=["GET"])
 def get_one_user(user_id):
-	pass
+	# query database by users
+	users = User.query.all()
+	#  create an instance of linked list class
+	all_users_linked_list = linked_list.LinkedList()
+	# iterate through each users and add them to the 
+	#  linked list by inserting a dictionary with user data
+	# inserting at beginning is necessary to create a list of descending ids
+	for user in users:
+		all_users_linked_list.insert_beginning(
+			{
+				"id": user.id, 
+				"name": user.name, 
+				"email": user.email, 
+				"address": user.address, 
+				"phone": user.phone
+			}
+		)
+	user = all_users_linked_list.get_user_by_id(user_id)
+
+	return jsonify(user), 200
 
 # delete a user
 @app.route("/user/<user_id>", methods=["DELETE"])
 def delete_user(user_id):
-	pass
+	user = User.query.filter_by(id = user_id).first()
+	db.session.delete(user)
+	db.session.commit()
+	
+	return jsonify({}), 200
 
 # create blog post for specific user id
 @app.route("/blog_post/<user_id>", methods=["POST"])

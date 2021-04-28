@@ -12,6 +12,21 @@ class LinkedList:
 		self.head = None
 		self.last_node = None
 
+	#  helper method to convert linked list to a list of data 
+	def to_list(self):
+		new_list = []
+
+		if self.head is None: 
+			return new_list
+
+		# transverse the linked list and add the linked list data to a list
+		node = self.head
+		while node: 
+			new_list.append(node.data)
+			node = node.next_node
+
+		return new_list
+
 	# print data in Node 
 	def print_linked_list(self):
 		ll_string = ""
@@ -33,7 +48,7 @@ class LinkedList:
 	def insert_beginning(self, data):
 		# keep track of both the head and end of linked list
 		if self.head is None:
-			self.head = Node(data, Node)
+			self.head = Node(data, None)
 			self.last_node = self.head
 
 		new_node = Node(data, self.head)
@@ -47,4 +62,13 @@ class LinkedList:
 
 		self.last_node.next_node = Node(data, None)
 		self.last_node = self.last_node.next_node
-		
+
+	# helper method to find user by Id 
+	def get_user_by_id(self, user_id):
+		node = self.head
+		while node: 
+			if node.data["id"] is int(user_id):
+				return node.data
+			node = node.next_node
+		return None
+
